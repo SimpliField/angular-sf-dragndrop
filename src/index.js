@@ -2,7 +2,9 @@ angular.module('simplifield.dragndrop', [
 ]).factory('sfDragNDropService', function DragNDropService() {
   return {
     dragType: '',
-    draggedItem: null
+    draggedItem: null,
+    targettedItem: null,
+    prevTargettedItem: null
   };
 }).directive("sfDrop", ['$parse', 'sfDragNDropService',
   function DropDirective($parse, sfDragNDropService) {
@@ -23,6 +25,7 @@ angular.module('simplifield.dragndrop', [
           return;
         }
         evt.preventDefault();
+        sfDragNDropService.targettedItem = item($scope);
         element.addClass(attrs.sfDragOverClass || 'targetted');
         onDragEnterCallback($scope, {
           $item: sfDragNDropService.draggedItem,
@@ -30,43 +33,51 @@ angular.module('simplifield.dragndrop', [
           $type: sfDragNDropService.dragType,
           $returnValue: sfDragNDropService.dragCbReturnValue
         });
+        $scope.$apply();
       });
       element.bind('dragleave', function(evt) {
         if(sfDragNDropService.dragType !== (attrs.sfDragType || 'all')) {
           return;
         }
         element.removeClass(attrs.sfDragOverClass || 'targetted');
+        sfDragNDropService.prevTargettedItem = item($scope);
+        sfDragNDropService.targettedItem = null;
         onDragEnterCallback($scope, {
           $item: sfDragNDropService.draggedItem,
-          $target: item($scope),
+          $target: sfDragNDropService.prevTargettedItem,
           $type: sfDragNDropService.dragType,
           $returnValue: sfDragNDropService.dragCbReturnValue
         });
+        $scope.$apply();
       });
       element.bind('dragover', function(evt) {
         if(sfDragNDropService.dragType !== (attrs.sfDragType || 'all')) {
           return;
         }
         evt.preventDefault();
+        sfDragNDropService.targettedItem = item($scope);
         element.addClass(attrs.sfDragOverClass || 'targetted');
         onDragOverCallback($scope, {
           $item: sfDragNDropService.draggedItem,
-          $target: item($scope),
+          $target: sfDragNDropService.targettedItem,
           $type: sfDragNDropService.dragType,
           $returnValue: sfDragNDropService.dragCbReturnValue
         });
+        $scope.$apply();
       });
       element.bind('drop', function(evt) {
         if(sfDragNDropService.dragType !== (attrs.sfDragType || 'all')) {
           return;
         }
         evt.preventDefault();
-        element.removeClass(attrs.sfDragOverClass);
+        sfDragNDropService.targettedItem = item($scope);
+        element.removeClass(attrs.sfDragOverClass || 'targetted');
         onDropCallback($scope, {
           $item: sfDragNDropService.draggedItem,
-          $target: item($scope),
+          $target: sfDragNDropService.targettedItem,
           $type: sfDragNDropService.dragType
         });
+        $scope.$apply();
       });
     }
   };
@@ -116,8 +127,10 @@ angular.module('simplifield.dragndrop', [
         } else {
           computeDragItem();
         }
+        $scope.$apply();
       });
       element.bind('dragend', function(evt) {
+        sfDragNDropService.targettedItem = null;
         sfDragNDropService.draggedItem = null;
         sfDragNDropService.dragType = '';
         sfDragNDropService.dragCbReturnValue = null;
@@ -126,6 +139,7 @@ angular.module('simplifield.dragndrop', [
           $item: sfDragNDropService.draggedItem,
           $type: sfDragNDropService.dragType
         });
+        $scope.$apply();
       });
     }
   };

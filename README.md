@@ -4,6 +4,8 @@ A drag and drop module enabling drag and drop without modifying your model
 
 [![NPM version](https://badge.fury.io/js/angular-sf-dragndrop.png)](https://npmjs.org/package/angular-sf-dragndrop) [![Build status](https://secure.travis-ci.org/SimpliField/angular-sf-dragndrop.png)](https://travis-ci.org/SimpliField/angular-sf-dragndrop) [![Dependency Status](https://david-dm.org/SimpliField/angular-sf-dragndrop.png)](https://david-dm.org/SimpliField/angular-sf-dragndrop) [![devDependency Status](https://david-dm.org/SimpliField/angular-sf-dragndrop/dev-status.png)](https://david-dm.org/SimpliField/angular-sf-dragndrop#info=devDependencies) [![Coverage Status](https://coveralls.io/repos/SimpliField/angular-sf-dragndrop/badge.png?branch=master)](https://coveralls.io/r/SimpliField/angular-sf-dragndrop?branch=master) [![Code Climate](https://codeclimate.com/github/SimpliField/angular-sf-dragndrop.png)](https://codeclimate.com/github/SimpliField/angular-sf-dragndrop)
 
+[Here is a sample usage you can play with](http://embed.plnkr.co/d7Q99447CPERgaBJwuD8/preview).
+
 ## Setting a dragable element (sfDrag directive)
 
 ```html

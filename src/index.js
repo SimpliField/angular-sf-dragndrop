@@ -75,7 +75,8 @@ angular.module('simplifield.dragndrop', [
         onDropCallback($scope, {
           $item: sfDragNDropService.draggedItem,
           $target: sfDragNDropService.targettedItem,
-          $type: sfDragNDropService.dragType
+          $type: sfDragNDropService.dragType,
+          $returnValue: sfDragNDropService.dragCbReturnValue
         });
         $scope.$apply();
       });

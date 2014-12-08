@@ -1,11 +1,26 @@
 angular.module('simplifield.dragndrop', [
 ]).factory('sfDragNDropService', function DragNDropService() {
-  return {
-    dragType: '',
-    draggedItem: null,
-    targettedItem: null,
-    prevTargettedItem: null
+  var SESSION_KEYS = [
+    'item', 'target', 'previous',
+    'itemIndex', 'targetIndex', 'previousIndex'
+  ];
+  sfDragNDropService = {
+    session: {},
+    reset: function reset() {
+      Object.keys(sfDragNDropService.session).forEach(function(key) {
+        if('type' == key) {
+          sfDragNDropService.session.type = '';
+        } else if (-1 !== SESSION_KEYS.indexOf(key)) {
+          sfDragNDropService.session[key] = null;
+        } else {
+          delete sfDragNDropService.session[key];
+        }
+      });
+    }
   };
+  sfDragNDropService.reset();
+
+  return sfDragNDropService;
 }).directive("sfDrop", ['$parse', 'sfDragNDropService',
   function DropDirective($parse, sfDragNDropService) {
 
@@ -21,62 +36,72 @@ angular.module('simplifield.dragndrop', [
       var onDragOverCallback = $parse(attrs.sfOnDragOver);
       // Bind drag events
       element.bind('dragenter', function(evt) {
-        if(sfDragNDropService.dragType !== (attrs.sfDragType || 'all')) {
+        if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
         evt.preventDefault();
-        sfDragNDropService.targettedItem = item($scope);
-        element.addClass(attrs.sfDragOverClass || 'targetted');
-        onDragEnterCallback($scope, {
-          $item: sfDragNDropService.draggedItem,
-          $target: item($scope),
-          $type: sfDragNDropService.dragType,
-          $returnValue: sfDragNDropService.dragCbReturnValue
+        sfDragNDropService.session.target = item($scope);
+        sfDragNDropService.session.targetIndex = onDragEnterCallback($scope, {
+          $type: sfDragNDropService.session.type,
+          $item: sfDragNDropService.session.item,
+          $itemIndex: sfDragNDropService.session.itemIndex,
+          $target: sfDragNDropService.session.target,
+          $targetIndex: sfDragNDropService.session.targetIndex,
+          $session: sfDragNDropService.session
         });
         $scope.$apply();
       });
       element.bind('dragleave', function(evt) {
-        if(sfDragNDropService.dragType !== (attrs.sfDragType || 'all')) {
-          return;
-        }
-        element.removeClass(attrs.sfDragOverClass || 'targetted');
-        sfDragNDropService.prevTargettedItem = item($scope);
-        sfDragNDropService.targettedItem = null;
-        onDragEnterCallback($scope, {
-          $item: sfDragNDropService.draggedItem,
-          $target: sfDragNDropService.prevTargettedItem,
-          $type: sfDragNDropService.dragType,
-          $returnValue: sfDragNDropService.dragCbReturnValue
-        });
-        $scope.$apply();
-      });
-      element.bind('dragover', function(evt) {
-        if(sfDragNDropService.dragType !== (attrs.sfDragType || 'all')) {
+        if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
         evt.preventDefault();
-        sfDragNDropService.targettedItem = item($scope);
-        element.addClass(attrs.sfDragOverClass || 'targetted');
+        sfDragNDropService.session.previous = item($scope);
+        sfDragNDropService.session.previousIndex = sfDragNDropService.session.targetIndex;
+        onDragEnterCallback($scope, {
+          $type: sfDragNDropService.session.type,
+          $item: sfDragNDropService.session.item,
+          $itemIndex: sfDragNDropService.session.itemIndex,
+          $previous: sfDragNDropService.session.previous,
+          $previousIndex: sfDragNDropService.session.previousIndex,
+          $session: sfDragNDropService.session
+        });
+        
+        $scope.$apply();
+      });
+      element.bind('dragover', function(evt) {
+        if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
+          return;
+        }
+        evt.preventDefault();
+        sfDragNDropService.session.target = item($scope);
         onDragOverCallback($scope, {
-          $item: sfDragNDropService.draggedItem,
-          $target: sfDragNDropService.targettedItem,
-          $type: sfDragNDropService.dragType,
-          $returnValue: sfDragNDropService.dragCbReturnValue
+          $type: sfDragNDropService.session.type,
+          $item: sfDragNDropService.session.item,
+          $itemIndex: sfDragNDropService.session.itemIndex,
+          $target: sfDragNDropService.session.target,
+          $targetIndex: sfDragNDropService.session.targetIndex,
+          $previous: sfDragNDropService.session.target,
+          $previousIndex: sfDragNDropService.session.targetIndex,
+          $session: sfDragNDropService.session
         });
         $scope.$apply();
       });
       element.bind('drop', function(evt) {
-        if(sfDragNDropService.dragType !== (attrs.sfDragType || 'all')) {
+        if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
         evt.preventDefault();
-        sfDragNDropService.targettedItem = item($scope);
-        element.removeClass(attrs.sfDragOverClass || 'targetted');
+        sfDragNDropService.session.target = item($scope);
         onDropCallback($scope, {
-          $item: sfDragNDropService.draggedItem,
-          $target: sfDragNDropService.targettedItem,
-          $type: sfDragNDropService.dragType,
-          $returnValue: sfDragNDropService.dragCbReturnValue
+          $type: sfDragNDropService.session.type,
+          $item: sfDragNDropService.session.item,
+          $itemIndex: sfDragNDropService.session.itemIndex,
+          $target: sfDragNDropService.session.target,
+          $targetIndex: sfDragNDropService.session.targetIndex,
+          $previous: sfDragNDropService.session.previous,
+          $previousIndex: sfDragNDropService.session.previousIndex,
+          $session: sfDragNDropService.session
         });
         $scope.$apply();
       });
@@ -91,38 +116,45 @@ angular.module('simplifield.dragndrop', [
     link: function($scope, element, attrs)  {
       // Keep a ref to the drag model
      	var item = $parse(attrs.sfDrag);
+
       // Setting callbacks
       var dragGenerator = attrs.sfDragGenerator ?
         $parse(attrs.sfDragGenerator) :
         null;
+
       // Setting callbacks
       var onDragCallback = $parse(attrs.sfOnDrag);
       var onDragEndCallback = $parse(attrs.sfOnDragEnd);
+
       // Make the element draggable
       attrs.$set('draggable', 'true');
+
       // Bind drag events
       element.bind('dragstart', function(evt) {
-        var $item = item($scope);
+        var draggedItem = item($scope);
         function computeDragItem() {
-          sfDragNDropService.dragCbReturnValue = onDragCallback($scope, {
-            $item: $item
+           var itemIndex = onDragCallback($scope, {
+            $item: draggedItem,
+            $session: sfDragNDropService.session
           });
-          if(-1 !== sfDragNDropService.dragCbReturnValue) {
-            sfDragNDropService.draggedItem = $item;
-            sfDragNDropService.dragType = attrs.sfDragType || 'all';
-            element.addClass(attrs.sfDragClass || 'dragged');
+          if(-1 !== itemIndex) {
+            sfDragNDropService.session.itemIndex = itemIndex;
+            sfDragNDropService.session.item = draggedItem;
+            sfDragNDropService.session.type = attrs.sfDragType || 'all';
             evt.stopPropagation();
-            (evt.dataTransfer || evt.originalEvent.dataTransfer).effectAllowed = 'move';
+            (evt.dataTransfer || evt.originalEvent.dataTransfer)
+              .effectAllowed = attrs.sfDragEffect || 'move';
           }
         }
         if(dragGenerator) {
-          $item = dragGenerator($scope, {
-            $item: $item
+          draggedItem = dragGenerator($scope, {
+            $type: attrs.sfDragType || 'all',
+            $item: draggedItem
           });
         }
-        if($item.then) {
-          $item.then(function(value) {
-            $item = value;
+        if(draggedItem.then) {
+          draggedItem.then(function(value) {
+            draggedItem = value;
             computeDragItem();
           });
         } else {
@@ -130,16 +162,17 @@ angular.module('simplifield.dragndrop', [
         }
         $scope.$apply();
       });
+
       element.bind('dragend', function(evt) {
-        sfDragNDropService.targettedItem = null;
-        sfDragNDropService.draggedItem = null;
-        sfDragNDropService.dragType = '';
-        sfDragNDropService.dragCbReturnValue = null;
-        element.removeClass(attrs.sfDragClass || 'dragged');
         onDragEndCallback($scope, {
-          $item: sfDragNDropService.draggedItem,
-          $type: sfDragNDropService.dragType
+          $type: sfDragNDropService.session.type,
+          $item: sfDragNDropService.session.item,
+          $itemIndex: sfDragNDropService.session.itemIndex,
+          $previous: sfDragNDropService.session.previous,
+          $previousIndex: sfDragNDropService.session.previousIndex,
+          $session: sfDragNDropService.session
         });
+        sfDragNDropService.reset();
         $scope.$apply();
       });
     }

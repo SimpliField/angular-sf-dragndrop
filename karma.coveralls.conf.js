@@ -10,7 +10,7 @@ module.exports = function(config){
     reporters: ['coverage'],
     
     coverageReporter: {
-      type : 'html',
+      type : 'lcovonly',
       dir : 'coverage/'
     },
 

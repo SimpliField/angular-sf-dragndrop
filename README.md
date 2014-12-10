@@ -13,7 +13,8 @@ A drag and drop module enabling drag and drop without modifying your model
   sf-drag-type="myDragFamily"
   sf-on-drag="onDragCallback($type, $item, $session)"
   sf-drag-generator="spawnDraggedItem($item)"
-  sf-on-drag-end="onDragEndCallback($type, $item, $itemIndex, $target, $targetIndex, $session)">
+  sf-on-drag-end="onDragEndCallback($type, $item, $itemIndex, $target, $targetIndex, $session)"
+  sf-drag-effect="none|copy|move|link|copyMove|copyLink|all">
 ```
 
 ### sf-drag
@@ -48,6 +49,10 @@ The callback in the parent controller that will be executed on drag end. It will
  take in argument the `sf-drag` value (`$item` parameter), the eventual
  targetted value (`$target` parameter, see `sf-drop` above), the `sf-on-drag`
   returned value (`$targetIndex` parameter) and the type of drag (`$type`).
+
+### sf-drag-effect
+Set the type of effect the drag allows,
+  [see MDN documentation for more informations](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations#drageffects).
 
 ## Setting a drop target (sfDrop directive)
 

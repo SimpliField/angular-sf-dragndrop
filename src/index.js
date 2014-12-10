@@ -114,8 +114,11 @@ angular.module('simplifield.dragndrop', [
   return {
     restrict: 'A',
     link: function($scope, element, attrs)  {
-      // Keep a ref to the drag model
+      // Keep a ref to the dragged model value
      	var item = $parse(attrs.sfDrag);
+
+      // Try to get dragged datas
+     	var getDragData = $parse(attrs.sfDragData);
 
       // Setting callbacks
       var dragGenerator = attrs.sfDragGenerator ?
@@ -141,7 +144,11 @@ angular.module('simplifield.dragndrop', [
             sfDragNDropService.session.itemIndex = itemIndex;
             sfDragNDropService.session.item = draggedItem;
             sfDragNDropService.session.type = attrs.sfDragType || 'all';
+            sfDragNDropService.session.mime = attrs.sfDragMime || 'text/plain';
+            sfDragNDropService.session.data = getDragData($scope) || '' + itemIndex;
             evt.stopPropagation();
+            (evt.dataTransfer || evt.originalEvent.dataTransfer)
+              .setData(sfDragNDropService.session.mime, sfDragNDropService.session.data);
             (evt.dataTransfer || evt.originalEvent.dataTransfer)
               .effectAllowed = attrs.sfDragEffect || 'move';
           }

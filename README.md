@@ -54,6 +54,18 @@ The callback in the parent controller that will be executed on drag end. It will
 Set the type of effect the drag allows,
   [see MDN documentation for more informations](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Drag_operations#drageffects).
 
+### sf-drag-data
+Allow to provide datas for the drag operation, defaults to the item index. It may
+ be usefull if your dragged item is a blog post but you want the user to be able
+ to drag it to the address bar. The Plunker given above illustrate this ability.
+
+[Read this article](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Recommended_Drag_Types)
+ to view which drag types make sense for Browser/OS level interactions.
+
+
+### sf-drag-mime
+Specify the MIME type of above datas, defaults to 'text/plain'.
+
 ## Setting a drop target (sfDrop directive)
 
 ```html
@@ -100,7 +112,7 @@ This module internally uses a service in order to store drag and drop sessions.
 
 An object containing drag and drop session properties. Your can add some by your
  own but you should never erase the `sfDragNDropService.session` reference
- without knowing what you're doeing.
+ without knowing what you're doing.
 
 ### sfDragNDropService.reset()
 

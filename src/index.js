@@ -58,7 +58,7 @@ angular.module('simplifield.dragndrop', [
         evt.preventDefault();
         sfDragNDropService.session.previous = item($scope);
         sfDragNDropService.session.previousIndex = sfDragNDropService.session.targetIndex;
-        onDragEnterCallback($scope, {
+        onDragLeaveCallback($scope, {
           $type: sfDragNDropService.session.type,
           $item: sfDragNDropService.session.item,
           $itemIndex: sfDragNDropService.session.itemIndex,
@@ -66,7 +66,7 @@ angular.module('simplifield.dragndrop', [
           $previousIndex: sfDragNDropService.session.previousIndex,
           $session: sfDragNDropService.session
         });
-        
+
         $scope.$apply();
       });
       element.bind('dragover', function(evt) {

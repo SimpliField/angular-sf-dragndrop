@@ -11,6 +11,7 @@ A drag and drop module enabling drag and drop without modifying your model
 ```html
 <ANY sf-drag="myModelDraggableValue"
   sf-drag-type="myDragFamily"
+  sf-draggable="isDraggable($item)"
   sf-on-drag="onDragCallback($type, $item, $session)"
   sf-drag-generator="spawnDraggedItem($item)"
   sf-on-drag-end="onDragEndCallback($type, $item, $itemIndex, $target, $targetIndex, $session)"
@@ -20,6 +21,9 @@ A drag and drop module enabling drag and drop without modifying your model
 ### sf-drag
 The name of the `$scope` value on wich the draggable element is based. Behind
  any draggable element there must be a value in the parent scope attached.
+
+### sf-draggable
+Expression to allow to disable or enable the draggable ability of an element.
 
 ### sf-drag-type
 The type of the dragged object. This allows to use nested element drag and drop

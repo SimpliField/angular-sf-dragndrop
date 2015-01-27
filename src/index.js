@@ -130,7 +130,20 @@ angular.module('simplifield.dragndrop', [
       var onDragEndCallback = $parse(attrs.sfOnDragEnd);
 
       // Make the element draggable
-      attrs.$set('draggable', 'true');
+      if(attrs.sfDraggable) {
+        $scope.$watch(function() {
+          return $parse(attrs.sfDraggable)($scope, {
+            $type: sfDragNDropService.session.type,
+            $item: sfDragNDropService.session.item,
+            $itemIndex: sfDragNDropService.session.itemIndex,
+            $session: sfDragNDropService.session
+          });
+        }, function(newVal, oldVal) {
+          attrs.$set('draggable', (!!newVal).toString());
+        });
+      } else {
+        attrs.$set('draggable', 'true');
+      }
 
       // Bind drag events
       element.bind('dragstart', function(evt) {

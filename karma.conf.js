@@ -7,8 +7,8 @@ module.exports = function(config){
     frameworks: ['mocha', 'sinon-chai'],
     browsers : ['PhantomJS'],
     preprocessors: { 'src/index.js': 'coverage' },
-    reporters: ['coverage'],
-    
+    reporters: ['mocha', 'coverage'],
+
     coverageReporter: {
       type : 'html',
       dir : 'coverage/'

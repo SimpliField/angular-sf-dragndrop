@@ -4,7 +4,7 @@ angular.module('simplifield.dragndrop', [
     'item', 'target', 'previous',
     'itemIndex', 'targetIndex', 'previousIndex'
   ];
-  sfDragNDropService = {
+  var sfDragNDropService = {
     session: {},
     reset: function reset() {
       Object.keys(sfDragNDropService.session).forEach(function(key) {

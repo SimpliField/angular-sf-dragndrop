@@ -1,16 +1,28 @@
-angular.module('simplifield.dragndrop', [
-]).factory('sfDragNDropService', function DragNDropService() {
-  var SESSION_KEYS = [
-    'item', 'target', 'previous',
-    'itemIndex', 'targetIndex', 'previousIndex'
+const moduleName = 'simplifield.dragndrop';
+
+export default angular
+  .module(moduleName, [])
+  .factory('sfDragNDropService', DragNDropService)
+  .directive('sfDrop', ['$parse', 'sfDragNDropService', DropDirective])
+  .directive('sfDrag', ['$parse', 'sfDragNDropService', DragDirective])
+  .name;
+
+function DragNDropService() {
+  const SESSION_KEYS = [
+    'item',
+    'target',
+    'previous',
+    'itemIndex',
+    'targetIndex',
+    'previousIndex',
   ];
-  var sfDragNDropService = {
+  const sfDragNDropService = {
     session: {},
     reset: function reset() {
-      Object.keys(sfDragNDropService.session).forEach(function(key) {
-        if('type' == key) {
+      Object.keys(sfDragNDropService.session).forEach((key) => {
+        if('type' === key) {
           sfDragNDropService.session.type = '';
-        } else if (-1 !== SESSION_KEYS.indexOf(key)) {
+        } else if (SESSION_KEYS.includes(key)) {
           sfDragNDropService.session[key] = null;
         } else {
           delete sfDragNDropService.session[key];
@@ -18,24 +30,25 @@ angular.module('simplifield.dragndrop', [
       });
     }
   };
+
   sfDragNDropService.reset();
 
   return sfDragNDropService;
-}).directive("sfDrop", ['$parse', 'sfDragNDropService',
-  function DropDirective($parse, sfDragNDropService) {
+}
 
+function DropDirective($parse, sfDragNDropService) {
   return {
     restrict: 'A',
-    link: function($scope, element, attrs) {
+    link: ($scope, element, attrs) => {
       // Keep a ref to the dragged element
-     	var item = $parse(attrs.sfDrop);
+     	const item = $parse(attrs.sfDrop);
       // Setting callbacks
-      var onDropCallback = $parse(attrs.sfOnDrop);
-      var onDragEnterCallback = $parse(attrs.sfOnDragEnter);
-      var onDragLeaveCallback = $parse(attrs.sfOnDragLeave);
-      var onDragOverCallback = $parse(attrs.sfOnDragOver);
+      const onDropCallback = $parse(attrs.sfOnDrop);
+      const onDragEnterCallback = $parse(attrs.sfOnDragEnter);
+      const onDragLeaveCallback = $parse(attrs.sfOnDragLeave);
+      const onDragOverCallback = $parse(attrs.sfOnDragOver);
       // Bind drag events
-      element.bind('dragenter', function(evt) {
+      element.bind('dragenter', (evt) => {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -51,7 +64,7 @@ angular.module('simplifield.dragndrop', [
         });
         $scope.$apply();
       });
-      element.bind('dragleave', function(evt) {
+      element.bind('dragleave', (evt) => {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -69,7 +82,7 @@ angular.module('simplifield.dragndrop', [
 
         $scope.$apply();
       });
-      element.bind('dragover', function(evt) {
+      element.bind('dragover', (evt) => {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -87,7 +100,7 @@ angular.module('simplifield.dragndrop', [
         });
         $scope.$apply();
       });
-      element.bind('drop', function(evt) {
+      element.bind('drop', (evt) => {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -108,45 +121,48 @@ angular.module('simplifield.dragndrop', [
     }
   };
 
-}]).directive('sfDrag', ['$parse', 'sfDragNDropService',
-  function DragDirective($parse, sfDragNDropService) {
+}
 
+function DragDirective($parse, sfDragNDropService) {
   return {
     restrict: 'A',
-    link: function($scope, element, attrs)  {
+    link: ($scope, element, attrs) => {
       // Keep a ref to the dragged model value
-     	var item = $parse(attrs.sfDrag);
+     	const item = $parse(attrs.sfDrag);
 
       // Try to get dragged datas
-     	var getDragData = $parse(attrs.sfDragData);
+     	const getDragData = $parse(attrs.sfDragData);
 
       // Setting callbacks
-      var dragGenerator = attrs.sfDragGenerator ?
+      const dragGenerator = attrs.sfDragGenerator ?
         $parse(attrs.sfDragGenerator) :
         null;
 
       // Setting callbacks
-      var onDragCallback = $parse(attrs.sfOnDrag);
-      var onDragEndCallback = $parse(attrs.sfOnDragEnd);
+      const onDragCallback = $parse(attrs.sfOnDrag);
+      const onDragEndCallback = $parse(attrs.sfOnDragEnd);
 
       // Make the element draggable
       if(attrs.sfDraggable) {
-        $scope.$watch(function() {
-          return $parse(attrs.sfDraggable)($scope, {
-            $type: sfDragNDropService.session.type,
-            $item: sfDragNDropService.session.item,
-            $itemIndex: sfDragNDropService.session.itemIndex,
-            $session: sfDragNDropService.session
-          });
-        }, function(newVal, oldVal) {
-          attrs.$set('draggable', (!!newVal).toString());
-        });
+        $scope.$watch(
+          () => {
+            return $parse(attrs.sfDraggable)($scope, {
+              $type: sfDragNDropService.session.type,
+              $item: sfDragNDropService.session.item,
+              $itemIndex: sfDragNDropService.session.itemIndex,
+              $session: sfDragNDropService.session
+            });
+          },
+          (newVal, oldVal) => {
+            attrs.$set('draggable', (!!newVal).toString());
+          }
+        );
       } else {
         attrs.$set('draggable', 'true');
       }
 
       // Bind drag events
-      element.bind('dragstart', function(evt) {
+      element.bind('dragstart', (evt) => {
         var draggedItem = item($scope);
         function computeDragItem() {
            var itemIndex = onDragCallback($scope, {
@@ -173,7 +189,7 @@ angular.module('simplifield.dragndrop', [
           });
         }
         if(draggedItem.then) {
-          draggedItem.then(function(value) {
+          draggedItem.then((value) => {
             draggedItem = value;
             computeDragItem();
           });
@@ -183,7 +199,7 @@ angular.module('simplifield.dragndrop', [
         $scope.$apply();
       });
 
-      element.bind('dragend', function(evt) {
+      element.bind('dragend', (evt) => {
         onDragEndCallback($scope, {
           $type: sfDragNDropService.session.type,
           $item: sfDragNDropService.session.item,
@@ -197,5 +213,4 @@ angular.module('simplifield.dragndrop', [
       });
     }
   };
-}]);
-
+}

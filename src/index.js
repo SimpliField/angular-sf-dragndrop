@@ -19,7 +19,7 @@ function DragNDropService() {
   const sfDragNDropService = {
     session: {},
     reset: function reset() {
-      Object.keys(sfDragNDropService.session).forEach((key) => {
+      Object.keys(sfDragNDropService.session).forEach(function(key) {
         if('type' === key) {
           sfDragNDropService.session.type = '';
         } else if (SESSION_KEYS.includes(key)) {
@@ -39,7 +39,7 @@ function DragNDropService() {
 function DropDirective($parse, sfDragNDropService) {
   return {
     restrict: 'A',
-    link: ($scope, element, attrs) => {
+    link: function($scope, element, attrs) {
       // Keep a ref to the dragged element
      	const item = $parse(attrs.sfDrop);
       // Setting callbacks
@@ -48,7 +48,7 @@ function DropDirective($parse, sfDragNDropService) {
       const onDragLeaveCallback = $parse(attrs.sfOnDragLeave);
       const onDragOverCallback = $parse(attrs.sfOnDragOver);
       // Bind drag events
-      element.bind('dragenter', (evt) => {
+      element.bind('dragenter', function(evt) {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -64,7 +64,7 @@ function DropDirective($parse, sfDragNDropService) {
         });
         $scope.$apply();
       });
-      element.bind('dragleave', (evt) => {
+      element.bind('dragleave', function(evt) {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -82,7 +82,7 @@ function DropDirective($parse, sfDragNDropService) {
 
         $scope.$apply();
       });
-      element.bind('dragover', (evt) => {
+      element.bind('dragover', function(evt) {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -100,7 +100,7 @@ function DropDirective($parse, sfDragNDropService) {
         });
         $scope.$apply();
       });
-      element.bind('drop', (evt) => {
+      element.bind('drop', function(evt) {
         if(sfDragNDropService.session.type !== (attrs.sfDragType || 'all')) {
           return;
         }
@@ -126,7 +126,7 @@ function DropDirective($parse, sfDragNDropService) {
 function DragDirective($parse, sfDragNDropService) {
   return {
     restrict: 'A',
-    link: ($scope, element, attrs) => {
+    link: function($scope, element, attrs) {
       // Keep a ref to the dragged model value
      	const item = $parse(attrs.sfDrag);
 
@@ -145,7 +145,7 @@ function DragDirective($parse, sfDragNDropService) {
       // Make the element draggable
       if(attrs.sfDraggable) {
         $scope.$watch(
-          () => {
+          function() {
             return $parse(attrs.sfDraggable)($scope, {
               $type: sfDragNDropService.session.type,
               $item: sfDragNDropService.session.item,
@@ -153,7 +153,7 @@ function DragDirective($parse, sfDragNDropService) {
               $session: sfDragNDropService.session
             });
           },
-          (newVal, oldVal) => {
+          function(newVal, oldVal) {
             attrs.$set('draggable', (!!newVal).toString());
           }
         );
@@ -162,7 +162,7 @@ function DragDirective($parse, sfDragNDropService) {
       }
 
       // Bind drag events
-      element.bind('dragstart', (evt) => {
+      element.bind('dragstart', function(evt) {
         var draggedItem = item($scope);
         function computeDragItem() {
            var itemIndex = onDragCallback($scope, {
@@ -189,7 +189,7 @@ function DragDirective($parse, sfDragNDropService) {
           });
         }
         if(draggedItem.then) {
-          draggedItem.then((value) => {
+          draggedItem.then(function(value) {
             draggedItem = value;
             computeDragItem();
           });
@@ -199,7 +199,7 @@ function DragDirective($parse, sfDragNDropService) {
         $scope.$apply();
       });
 
-      element.bind('dragend', (evt) => {
+      element.bind('dragend', function(evt) {
         onDragEndCallback($scope, {
           $type: sfDragNDropService.session.type,
           $item: sfDragNDropService.session.item,

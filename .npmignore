@@ -2,5 +2,3 @@
 *.swp
 node_modules/
 .git
-.coveralls.yml
-tests/results

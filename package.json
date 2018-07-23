@@ -3,5 +3,13 @@
   "version": "3.0.1",
   "author": "Nicolas Froidure",
   "license": "MIT",
-  "main": "src/index.js"
+  "main": "dist/index.js",
+  "devDependencies": {
+    "babel-cli": "6.26.0",
+    "babel-env": "2.4.1"
+  },
+  "scripts": {
+    "build": "rm -rf dist && babel src -d dist",
+    "preversion": "npm run build"
+  }
 }

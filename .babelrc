@@ -1,0 +1,8 @@
+{
+  "presets": [
+    ["env", {
+      "targets": { "browsers": [">1%", "ie>=9"] },
+      "useBuiltIns": "entry"
+    }]
+  ]
+}
